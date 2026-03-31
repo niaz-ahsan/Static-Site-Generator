@@ -43,4 +43,26 @@ def text_node_to_html_node(text_node):
         return LeafNode("img", "", props)
     else:
         raise Exception("Type not supported!")
-        
+
+# old_nodes: a list of TextNodes
+# delimiter: by which delim we should split
+# text_type: after split type of text found in the odd index, 
+# all even index item will be of TextType.TEXT        
+def split_nodes_delimiter(old_nodes, delimeter, text_type):
+    output = []
+    for node in old_nodes:
+        # anything other than TEXT should be added as is
+        if node.text_type != TextType.TEXT:
+            output.append(node)
+            continue
+        parts = node.text.split(delimeter)
+        # checking closing delimeter, even # parts --> exists unclosed delim
+        if len(parts) % 2 == 0:
+            raise Exception("Invalid Markdown Syntax!")
+        for i, part in enumerate(parts):
+            if len(part) > 0:
+                part_text_type = TextType.TEXT if i % 2 == 0 else text_type 
+                output.append(TextNode(part, part_text_type))
+    return output
+    
+

@@ -1,6 +1,6 @@
 import unittest
 
-from textnode import TextNode, TextType, text_node_to_html_node
+from textnode import TextNode, TextType, text_node_to_html_node, split_nodes_delimiter
 
 class TestTextNode(unittest.TestCase):
     def test_eq(self):
@@ -49,6 +49,62 @@ class TestTextNode(unittest.TestCase):
         node.text_type = "not_a_real_type"
         with self.assertRaises(Exception):
             text_node_to_html_node(node)
+
+    # Testing split_nodes_delimiter(...)
+    def test_split_nodes_delimiter_code(self):
+        node = TextNode("This is text with a `code block` word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.CODE)
+        expected_output = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" word", TextType.TEXT)
+        ]
+        self.assertEqual(new_nodes, expected_output)
+
+    def test_split_nodes_delimiter_bold(self):
+        node = TextNode("This is text with a **bold block** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected_output = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("bold block", TextType.BOLD),
+            TextNode(" word", TextType.TEXT)
+        ]
+        self.assertEqual(new_nodes, expected_output)
+
+    def test_split_nodes_delimiter_bold_multiple(self):
+        node = TextNode("**This** is text with a **bold block** word", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected_output = [
+            TextNode("This", TextType.BOLD),
+            TextNode(" is text with a ", TextType.TEXT),
+            TextNode("bold block", TextType.BOLD),
+            TextNode(" word", TextType.TEXT)
+        ]
+        self.assertEqual(new_nodes, expected_output)
+
+    def test_split_nodes_delimiter_mixed(self):
+        node = TextNode("This has **bold** and _italic_ text", TextType.TEXT)
+        bold_split = split_nodes_delimiter([node], "**", TextType.BOLD)
+        italic_split = split_nodes_delimiter(bold_split, "_", TextType.ITALIC)
+        bold_expected_output = [
+            TextNode("This has ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" and _italic_ text", TextType.TEXT)
+        ]
+        italic_expected_output = [
+            TextNode("This has ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" text", TextType.TEXT)
+        ]
+        self.assertEqual(bold_split, bold_expected_output)
+        self.assertEqual(italic_split, italic_expected_output)
+
+    def test_split_nodes_delimiter_invalid(self):
+        node = TextNode("This has a `unclosed code block", TextType.TEXT)
+        with self.assertRaises(Exception):
+            split_nodes_delimiter([node], "`", TextType.CODE)
 
 # Checking if this file is executed directly
 if __name__ == "__main__":

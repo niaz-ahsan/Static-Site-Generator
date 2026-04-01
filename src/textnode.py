@@ -64,5 +64,8 @@ def split_nodes_delimiter(old_nodes, delimeter, text_type):
                 part_text_type = TextType.TEXT if i % 2 == 0 else text_type 
                 output.append(TextNode(part, part_text_type))
     return output
+
+     
+
     
 

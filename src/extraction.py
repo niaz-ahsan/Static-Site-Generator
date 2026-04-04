@@ -68,4 +68,11 @@ def text_to_textnodes(text):
         return after_link_extracted
     except Exception as e:
         print(e)
+
+def extract_title(markdown):
+    lines = markdown.split("\n")
+    for line in lines:
+        if line.startswith("# "):
+            return line[2:]
+    raise Exception("No Header Found!")
    

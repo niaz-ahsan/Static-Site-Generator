@@ -53,7 +53,8 @@ def parse_list_items_to_html_nodes(text):
     list_items = text.split("\n")
     for item in list_items:
         separated = item.split(" ", 1)
-        output.append(ParentNode("li", text_to_children(separated[1])))
+        if len(separated) > 1:
+            output.append(ParentNode("li", text_to_children(separated[1])))
     return output
 
 def parse_quote_items_to_html_nodes(text):
@@ -61,7 +62,8 @@ def parse_quote_items_to_html_nodes(text):
     list_items = text.split("\n")
     for item in list_items:
         separated = item.split(" ", 1)
-        output.append(f"{separated[1]}")
+        if len(separated) > 1:
+            output.append(f"{separated[1]}")
     return text_to_children(" ".join(output))
 
 def parse_code_block(text):

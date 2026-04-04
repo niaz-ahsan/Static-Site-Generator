@@ -1,5 +1,5 @@
 import unittest
-from extraction import extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes
+from extraction import extract_markdown_images, extract_markdown_links, split_nodes_image, split_nodes_link, text_to_textnodes, extract_title
 from textnode import TextNode, TextType
 
 class TestLinkExtraction(unittest.TestCase):
@@ -323,6 +323,13 @@ class TestLinkExtraction(unittest.TestCase):
         ]
         self.assertEqual(nodes, expected)
 
+    # Test extract_title()
+    def test_extract_title(self):
+        text1 = """
+# Something to consider
+`code`
+"""
+        self.assertEqual(extract_title(text1), "Something to consider")
     
 
 # Checking if this file is executed directly

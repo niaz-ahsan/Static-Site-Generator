@@ -55,3 +55,43 @@ def generate_page(from_path, template_path, dest_path):
     os.makedirs(dest_dir, exist_ok = True)
     with open(dest_path, "w") as file:
         file.write(template_content)    
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    filenames = os.listdir(dir_path_content)
+    for filename in filenames:
+        filepath = f"{dir_path_content}/{filename}"
+        if os.path.isfile(filepath):
+            # read the file contents
+            file_md_content = get_file_content(filepath)
+            # read the template content
+            template_content = get_file_content(template_path)
+            # convert file content to HTML
+            converted_html_content = convert_md_html_file(file_md_content, template_content)
+            # write HTML content to respective dest dir
+            write_html_content_to_output_file(converted_html_content, dest_dir_path, filename)
+        else:
+            # this is a sub-dir
+            # recustively call the func
+            new_dest_dir_path = f"{dest_dir_path}/{filename}"
+            generate_pages_recursive(filepath, template_path, new_dest_dir_path)
+
+def get_file_content(filepath):
+    output = ""
+    with open(filepath, "r") as file:
+        output = file.read()
+    return output
+
+def convert_md_html_file(file_md_content, template_content):
+    html_node = markdown_to_html_node(file_md_content)
+    html_content = html_node.to_html()
+    page_title = extract_title(file_md_content)
+    template_content = template_content.replace("{{ Title }}", page_title)
+    template_content = template_content.replace("{{ Content }}", html_content) 
+    return template_content
+
+def write_html_content_to_output_file(html_content, dest_dir, dest_filename):
+    os.makedirs(dest_dir, exist_ok=True)
+    filename = dest_filename.split(".")[0]
+    dest_path = f"{dest_dir}/{filename}.html"
+    with open(dest_path, "w") as file:
+        file.write(html_content)

@@ -36,6 +36,7 @@ def copy_static_public(src_path, dest_path):
 
 ####################################################################
 
+# No longer used
 def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     md_content = ""
